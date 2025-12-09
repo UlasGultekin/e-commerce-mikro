@@ -1,0 +1,53 @@
+services:
+  # Cart-service için MongoDB
+  cart-mongo:
+    image: mongo:7
+    container_name: cart-mongo
+    restart: unless-stopped
+    ports:
+      - "27018:27017"
+    environment:
+      MONGO_INITDB_DATABASE: cart_service_db
+    volumes:
+      - cart_mongo_data:/data/db
+
+  # Mongo Express (Mongo UI)
+  mongo-express:
+    image: mongo-express:latest
+    container_name: cart-mongo-ui
+    restart: unless-stopped
+    depends_on:
+      - cart-mongo
+    ports:
+      - "9096:8081"                 # Mongo UI -> http://localhost:9096
+    environment:
+      ME_CONFIG_MONGODB_URL: mongodb://cart-mongo:27017
+      ME_CONFIG_BASICAUTH_USERNAME: admin
+      ME_CONFIG_BASICAUTH_PASSWORD: admin
+
+  # Cart-service için Redis
+  cart-redis:
+    image: redis:7
+    container_name: cart-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    command: ["redis-server", "--appendonly", "yes"]
+    volumes:
+      - cart_redis_data:/data
+
+  # Redis UI (Redis Commander)
+  redis-commander:
+    image: rediscommander/redis-commander:latest
+    container_name: cart-redis-ui
+    restart: unless-stopped
+    depends_on:
+      - cart-redis
+    environment:
+      REDIS_HOSTS: local:cart-redis:6379
+    ports:
+      - "9097:8081"                 # Redis UI -> http://localhost:9097
+
+volumes:
+  cart_mongo_data:
+  cart_redis_data:
