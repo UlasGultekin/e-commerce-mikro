@@ -1,0 +1,103 @@
+{
+  "info": {
+    "name": "inventory-service",
+    "_postman_id": "aa9f0b54-e6d9-4e6d-b7df-f9a90b99ec20",
+    "description": "Postman collection for Inventory Service API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8083"
+    },
+    {
+      "key": "productId",
+      "value": "prod-123"
+    }
+  ],
+  "item": [
+    {
+      "name": "Get Inventory",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/inventory/{{productId}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "inventory",
+            "{{productId}}"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Adjust Inventory",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"productId\": \"{{productId}}\",\n  \"delta\": -5,\n  \"reason\": \"Manual correction\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/inventory/adjust",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "inventory",
+            "adjust"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Simulate Kafka - ORDER_CREATED Event (Manual Test)",
+      "event": [],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"eventType\": \"ORDER_CREATED\",\n  \"orderId\": \"ord-001\",\n  \"items\": [\n    {\n      \"productId\": \"{{productId}}\",\n      \"quantity\": 2\n    }\n  ]\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:9092/order-events",
+          "host": [
+            "http://localhost:9092"
+          ],
+          "path": [
+            "order-events"
+          ]
+        },
+        "description": "⚠️ NOT REAL ENDPOINT — Only for testing in tools like Kafka UI.\n\nThis request exists to copy test JSON for Kafka producers.\nKafka HTTP endpoint DOES NOT EXIST.\nYou need Kafka tool (Kafka UI, Kafdrop) to publish this event."
+      },
+      "response": []
+    }
+  ]
+}
